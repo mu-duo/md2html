@@ -1,0 +1,1 @@
+"""md2html - 将 Markdown 文件转换为 Sphinx singlehtml 的 CLI 工具。"""
