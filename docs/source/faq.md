@@ -43,7 +43,25 @@ sequenceDiagram
 
 修改后重新构建即可。
 
-## 2. png 模式报错缺少 mmdc
+## 2. LaTeX 数学公式不渲染
+
+md2html 支持 `$...$`（行内）和 `$$...$$`（块级）LaTeX 数学公式，通过 MathJax 在浏览器端渲染。若公式显示为原始文本：
+
+- **语法检查**：确保使用 `$...$`（行内）或 `$$...$$`（块级）定界符。不支持 `\(...\)`、`\[...\]` 或 `\begin{equation}` 等 LaTeX 环境语法
+- **浏览器兼容**：MathJax 支持所有现代浏览器。若公式不渲染，检查浏览器是否禁用了 JavaScript
+- **网络环境**：MathJax 从 CDN 加载（`cdn.jsdelivr.net`），需要网络连接。离线环境下公式会显示为原始 LaTeX 代码
+
+```markdown
+行内公式：$E = mc^2$
+
+块级公式：
+
+$$
+\int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}
+$$
+```
+
+## 3. png 模式报错缺少 mmdc
 
 ```
 错误: png 模式需要 mermaid-cli (mmdc)，但未找到。
@@ -63,9 +81,9 @@ npm install -g @mermaid-js/mermaid-cli
 # export PUPPETEER_EXECUTABLE_PATH=/path/to/chromium
 ```
 
-如果不需要预渲染 PNG，使用默认的 browser 模式即可，无需安装 mmdc。
+**提示**：默认的 `auto` 模式会自动检测 mmdc。未安装 mmdc 时自动降级到 browser 模式，无需手动切换。
 
-## 3. 页面没出现或顺序不对
+## 4. 页面没出现或顺序不对
 
 **页面没出现**：检查是否被排除规则命中。隐藏文件、`__pycache__` 等会被自动排除；检查 `.cripperignore` 和 `--exclude` 参数。
 
@@ -73,22 +91,37 @@ npm install -g @mermaid-js/mermaid-cli
 
 **章节首页被替换**：如果目录下有 `index.md` 或 `README.md`，它们会作为该章节的首页，其他 md 文件作为子页面。如果没有，工具会自动生成以目录名为标题的占位首页。
 
-## 4. 产物使用问题
+## 5. 产物使用问题
 
-**直接打开 HTML 文件**：双击 `index.html` 即可在浏览器中打开。mermaid 库已内嵌，`file://` 协议下也能正常渲染。
+**直接打开 HTML 文件**：在输出目录中找到 `.html` 文件（如 `index.html`），双击即可在浏览器中打开。
 
-**拷贝分发**：HTML 文件依赖 `_static/` 目录中的 CSS 和字体文件，**必须一起拷贝**。建议打包整个 `build/singlehtml/` 目录。
+**拷贝分发**：HTML 文件依赖 `_static/` 目录中的 CSS 和字体文件，**必须一起拷贝**。建议打包整个输出目录。
 
 **浏览器兼容性**：支持所有现代浏览器（Chrome、Firefox、Edge、Safari 最新版本）。
 
-**修改后重新构建**：输出目录是完整的 Sphinx 项目，可以在 `source/` 中修改 md 文件后运行 `make singlehtml` 重新构建，无需重新运行 `md2html`。
+**输出目录结构**：构建完成后，输出目录仅包含最终产物（HTML + `_static/` + `_images/`（如有））。Sphinx 脚手架（`source/`、`Makefile`、`make.bat`）已在构建后自动清理。如需保留脚手架，使用 `--skip-build` 仅生成不构建。
 
-## 5. png 模式很慢
+## 6. png 模式很慢
 
 png 模式每张 mermaid 图需要独立启动一个 Chromium 实例来渲染，消耗约 30 秒/张。57 张图的文档可能需要约 30 分钟。
 
 **建议**：
 
-- 日常迭代使用默认 browser 模式（构建秒级完成）
-- 最终定稿或需要打印输出时，再用 png 模式出正式版
-- 如果文档不含 mermaid 图，png 模式与 browser 模式速度相同
+- 日常迭代使用默认 `auto` 模式（有 mmdc 时自动用 png，无则用 browser）
+- 需要快速预览时用 `--mermaid-mode browser`（构建秒级完成）
+- 最终定稿或需要打印输出时，再用 `--mermaid-mode png` 出正式版
+- 如果文档不含 mermaid 图，任何模式速度相同
+
+## 7. mermaid auto 模式的行为
+
+`auto` 是默认模式，行为如下：
+
+- 检测到 `mmdc` 已安装 → 使用 png 模式（构建期预渲染为 PNG）
+- 未检测到 `mmdc` → 打印提示信息，自动降级到 browser 模式（浏览器渲染）
+
+提示信息示例：
+
+```
+信息: 未检测到 mermaid-cli (mmdc)，将使用浏览器端渲染模式。
+安装 mmdc 可获得 PNG 预渲染: npm install -g @mermaid-js/mermaid-cli
+```

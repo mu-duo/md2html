@@ -1,14 +1,16 @@
 # md2html 用户指南
 
-md2html 是一个命令行工具，把 Markdown 文件或整个 Markdown 文档目录，转成带目录导航的**单页 HTML 文档**。mermaid 图表开箱即用，无需额外配置。
+md2html（别名 `m2h`）是一个命令行工具，把 Markdown 文件或整个 Markdown 文档目录，转成带目录导航的**单页 HTML 文档**。mermaid 图表和 LaTeX 数学公式开箱即用。
 
 ## 特性
 
 - **单文件或目录输入**：一篇 md 或整个项目文档集，一键构建
 - **自动目录结构**：子目录自动成为章节，文件名排序决定顺序，`index.md`/`README.md` 自动作为章节首页
-- **mermaid 两种渲染模式**：默认浏览器端实时渲染（零依赖），可选构建期预渲染为 PNG（需 mmdc）
-- **离线单文件**：浏览器模式产物不依赖任何 CDN 或外部资源，拷走即看
-- **标准 Sphinx 项目**：输出目录是完整可编辑的 Sphinx 项目，修改后可 `make singlehtml` 重新构建
+- **mermaid 自动渲染**：默认自动检测 mmdc，有则用 PNG 预渲染，无则降级到浏览器端渲染；也可显式指定模式
+- **LaTeX 数学公式**：支持 `$...$`（行内）和 `$$...$$`（块级）LaTeX 数学公式，通过 MathJax 渲染
+- **离线可用**：browser 模式下产物不依赖任何 CDN 或外部资源，拷走即看；png 模式下 mermaid 图表内嵌为图片
+- **干净输出**：构建完成后仅保留最终产物（HTML + 静态资源），无 Sphinx 脚手架残留
+- **别名支持**：`m2h` 是 `md2html` 的等价简写
 
 ## 安装
 
@@ -20,36 +22,44 @@ source venv/bin/activate
 pip install /path/to/md2html
 ```
 
-安装后即可使用 `md2html` 命令。
+安装后即可使用 `md2html` 或 `m2h` 命令。
 
 ### 可选依赖
 
-仅在 `--mermaid-mode png` 模式下需要，默认 browser 模式不需要：
+mermaid 图表默认自动检测 mmdc，若存在则优先使用 PNG 预渲染模式。安装 mmdc：
 
 ```bash
 npm install -g @mermaid-js/mermaid-cli
 ```
+
+未安装 mmdc 时，自动降级到浏览器端渲染模式（零额外依赖）。
 
 ## 快速开始
 
 ### 单个 Markdown 文件
 
 ```bash
-md2html 文档.md -o ./output
+md2html 文档.md
 ```
 
-输出目录 `./output` 中：
-- `source/` —— 生成的 Sphinx 源文件
-- `build/singlehtml/index.html` —— 最终的单页 HTML 文档
-- `Makefile` / `make.bat` —— 标准 Sphinx 构建脚本，可修改 source/ 后重新 `make singlehtml`
+输出目录 `文档_md2html/` 中：
+- `文档.html` —— 最终的单页 HTML 文档
+- `_static/` —— CSS、JS、字体等静态资源
+- `_images/` —— PNG 模式下 mermaid 预渲染的图片（browser 模式下可能不存在）
 
 ### 整个文档目录
 
 ```bash
-md2html ./mydocs -o ./output
+md2html ./mydocs
 ```
 
-输入目录中的所有 `.md` 文件会被组织成带章节导航的文档集。
+输出目录 `mydocs_md2html/`，输入目录中的所有 `.md` 文件会被组织成带章节导航的文档集。
+
+### 指定输出目录
+
+```bash
+md2html ./mydocs -o ./output
+```
 
 ### mermaid 示例
 
@@ -62,3 +72,13 @@ graph LR
     C -->|是| D[完成]
     C -->|否| B
 ```
+
+### LaTeX 数学公式示例
+
+行内公式：`$E = mc^2$`
+
+块级公式：
+
+$$ 
+\int_0^\infty e^{-x^2} dx = \frac{\sqrt{\pi}}{2}
+$$

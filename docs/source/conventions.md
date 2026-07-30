@@ -76,48 +76,38 @@ drafts/*.md
 可通过 `--exclude` 追加额外的排除规则，语法与 `.cripperignore` 相同：
 
 ```bash
-md2html ./mydocs -o ./output --exclude 'drafts/' --exclude '*.tmp.md'
+md2html ./mydocs --exclude 'drafts/' --exclude '*.tmp.md'
 ```
 
 `--exclude` 可多次指定，与 `.cripperignore` 的规则叠加生效。
 
-## 示例
+## 输出结构
 
-假设输入目录结构如下：
-
-```
-mydocs/
-├── .cripperignore
-├── 00_overview.md
-├── 01_concepts.md
-├── 02_details/
-│   ├── index.md
-│   ├── algo.md
-│   └── images/
-│       └── flow.png
-└── 03_reference.md
-```
-
-构建后文档结构为：
+构建完成后，输出目录仅包含最终产物。假设输入目录为 `mydocs/`：
 
 ```
-输出目录/
-├── source/                    # 生成的 Sphinx 源文件
+mydocs_md2html/
+├── index.html                # 最终的单页 HTML 文档
+├── _static/                  # CSS、JS、字体等静态资源
+└── _images/                  # png 模式下 mermaid 预渲染的图片（browser 模式下可能不存在）
+```
+
+使用 `--skip-build` 时，输出目录保留完整的 Sphinx 项目结构：
+
+```
+mydocs_md2html/
+├── source/                   # Sphinx 源文件
 │   ├── 00_overview.md
 │   ├── 01_concepts.md
 │   ├── 02_details/
-│   │   ├── index.md          # 作为章节首页
+│   │   ├── index.md
 │   │   ├── algo.md
 │   │   └── images/
-│   │       └── flow.png      # 图片原样保留
+│   │       └── flow.png
 │   ├── 03_reference.md
 │   └── index.md              # 自动生成（根目录无 index.md/README.md）
-├── build/singlehtml/
-│   └── index.html            # 最终产物
 ├── Makefile
 └── make.bat
 ```
 
-- `02_details/index.md` 中会自动追加该章节的 toctree
-- 根目录自动生成 `index.md`（标题为目录名 "mydocs"），可通过 `--title` 自定义
-- 排除规则命中的文件不会出现在输出中
+> 注意：`--skip-build` 仅生成脚手架不构建；正常运行（无 `--skip-build`）会在构建完成后自动清理脚手架，仅保留最终产物。
