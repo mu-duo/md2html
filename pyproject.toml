@@ -7,11 +7,14 @@ name = "md2html"
 version = "0.1.0"
 description = "Convert Markdown files to Sphinx singlehtml"
 readme = "README.md"
-license = { text = "Apache-2.0" }
+license = "Apache-2.0"
 authors = [
     { name = "tanlinfeng", email = "linfeng.tan@foxmail.com" },
 ]
 requires-python = ">=3.9"
+classifiers = [
+    "License :: OSI Approved :: Apache Software License",
+]
 dependencies = [
     "click",
     "sphinx",
