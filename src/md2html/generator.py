@@ -230,6 +230,7 @@ def _generate_conf_py(
     root_doc: str = "index",
     language: str = "zh_CN",
     mermaid_mode: str = "browser",
+    theme: str = "nature",
 ):
     """生成 conf.py。
 
@@ -255,7 +256,7 @@ author = {author!r}
 extensions = ["myst_parser", "sphinxcontrib.mermaid", "sphinx.ext.mathjax"]
 root_doc = {root_doc!r}
 language = {language!r}
-html_theme = "nature"
+html_theme = {theme!r}
 myst_heading_anchors = 3
 myst_fence_as_directive = ["mermaid"]
 myst_enable_extensions = ["dollarmath"]
@@ -265,7 +266,7 @@ myst_enable_extensions = ["dollarmath"]
 mermaid_output_format = "png"
 {mermaid_cmd_line}
 '''.format(project=project, author=author, root_doc=root_doc, language=language,
-           mermaid_cmd_line=mermaid_cmd_line)
+           mermaid_cmd_line=mermaid_cmd_line, theme=theme)
     else:
         conf_content = '''\
 # Configuration file for the Sphinx documentation builder.
@@ -275,7 +276,7 @@ author = {author!r}
 extensions = ["myst_parser", "sphinxcontrib.mermaid", "sphinx.ext.mathjax"]
 root_doc = {root_doc!r}
 language = {language!r}
-html_theme = "nature"
+html_theme = {theme!r}
 myst_heading_anchors = 3
 myst_fence_as_directive = ["mermaid"]
 myst_enable_extensions = ["dollarmath"]
@@ -368,7 +369,7 @@ _MERMAID_CSS = (
     " color: #c0392b;"
     "}}"
 )
-'''.format(project=project, author=author, root_doc=root_doc, language=language)
+'''.format(project=project, author=author, root_doc=root_doc, language=language, theme=theme)
     conf_path = out_dir / 'source' / 'conf.py'
     with open(conf_path, 'w', encoding='utf-8') as f:
         f.write(conf_content)
@@ -457,6 +458,7 @@ def generate(
     exclude_patterns: Optional[List[str]] = None,
     is_single_file: bool = False,
     mermaid_mode: str = "browser",
+    theme: str = "nature",
 ):
     """生成 Sphinx 项目结构。
 
@@ -468,6 +470,7 @@ def generate(
         exclude_patterns: CLI 额外排除 glob 列表
         is_single_file: 是否为单文件输入
         mermaid_mode: "browser" 或 "png"
+        theme: Sphinx HTML 主题名
     """
     if exclude_patterns is None:
         exclude_patterns = []
@@ -505,7 +508,7 @@ def generate(
             root_doc = "README"
 
     # 生成 conf.py
-    _generate_conf_py(output_dir, project=title, author=author, root_doc=root_doc, mermaid_mode=mermaid_mode)
+    _generate_conf_py(output_dir, project=title, author=author, root_doc=root_doc, mermaid_mode=mermaid_mode, theme=theme)
 
     # 生成 Makefile 和 make.bat
     _generate_makefiles(output_dir)

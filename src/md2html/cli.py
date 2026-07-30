@@ -10,6 +10,19 @@ import click
 from .generator import generate
 from .builder import build
 
+# 支持的 Sphinx 主题列表。rtd 是 sphinx_rtd_theme 的简写。
+_THEME_CHOICES = [
+    'alabaster', 'nature', 'classic', 'sphinxdoc',
+    'pyramid', 'agogo', 'bizstyle', 'haiku',
+    'traditional', 'scrolls', 'epub',
+    'rtd',
+]
+
+# CLI 主题名 → Sphinx 实际主题名的映射
+_THEME_MAP = {
+    'rtd': 'sphinx_rtd_theme',
+}
+
 
 def _resolve_mermaid_mode(mode: str) -> str:
     """解析 mermaid 自动模式：检测 mmdc 确定最终渲染模式。
@@ -44,6 +57,10 @@ def _resolve_mermaid_mode(mode: str) -> str:
 @click.option('--mermaid-mode', type=click.Choice(['auto', 'browser', 'png']),
               default='auto',
               help='mermaid 渲染模式：auto=自动检测（默认），browser=浏览器渲染，png=mmdc 预渲染')
+@click.option('-t', '--theme', 'theme',
+              type=click.Choice(_THEME_CHOICES),
+              default='nature', show_default=True,
+              help='HTML 主题')
 def main(
     input: str,
     output_dir: Optional[str],
@@ -53,6 +70,7 @@ def main(
     force: bool,
     skip_build: bool,
     mermaid_mode: str,
+    theme: str,
 ):
     """将 Markdown 文件或目录转换为 Sphinx singlehtml。
 
@@ -77,6 +95,9 @@ def main(
     # 解析 mermaid 自动模式
     mermaid_mode = _resolve_mermaid_mode(mermaid_mode)
 
+    # 解析主题名：将 CLI 简写映射为 Sphinx 实际主题名
+    theme = _THEME_MAP.get(theme, theme)
+
     # 处理输出目录：缺省为当前目录下 {输入名}_md2html
     if output_dir is None:
         output_path = (Path.cwd() / f"{input_stem}_md2html").resolve()
@@ -98,6 +119,7 @@ def main(
         exclude_patterns=list(exclude_patterns),
         is_single_file=is_single_file,
         mermaid_mode=mermaid_mode,
+        theme=theme,
     )
 
     # 构建
