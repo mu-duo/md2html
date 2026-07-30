@@ -495,6 +495,8 @@ def generate(
     # 生成 toctree（仅目录模式）
     if not is_single_file:
         _generate_toctrees(source_dir, title)
+        if (source_dir / 'README.md').is_file() and not (source_dir / 'index.md').is_file():
+            root_doc = "README"
 
     # 生成 conf.py
     _generate_conf_py(output_dir, project=title, author=author, root_doc=root_doc, mermaid_mode=mermaid_mode)
