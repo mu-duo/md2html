@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "md2html"
+name = "md2singlehtml"
 version = "0.1.0"
 description = "Convert Markdown files to Sphinx singlehtml"
 readme = "README.md"
