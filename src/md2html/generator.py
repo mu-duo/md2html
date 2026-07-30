@@ -384,6 +384,9 @@ SPHINXBUILD   ?= sphinx-build
 SOURCEDIR     = source
 BUILDDIR      = build
 
+# 避免 sphinxcontrib-mermaid Popen(text=True) 在中文 Windows 上使用 GBK 编码报错
+export PYTHONUTF8 = 1
+
 # Put it first so that "make" without argument is like "make help".
 help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
@@ -407,6 +410,9 @@ if "%SPHINXBUILD%" == "" (
 )
 set SOURCEDIR=source
 set BUILDDIR=build
+
+REM 避免 sphinxcontrib-mermaid Popen(text=True) 在中文 Windows 上使用 GBK 编码报错
+set PYTHONUTF8=1
 
 %SPHINXBUILD% >NUL 2>NUL
 if errorlevel 9009 (
