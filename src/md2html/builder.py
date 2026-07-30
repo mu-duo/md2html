@@ -1,4 +1,4 @@
-"""构建器：调用 Sphinx 构建 singlehtml。支持 browser（浏览器渲染）和 png（mmdc 预渲染）模式。"""
+"""构建器：调用 Sphinx 构建 singlehtml。支持 auto（自动检测）、browser（浏览器渲染）和 png（mmdc 预渲染）模式。"""
 
 import os
 import re
@@ -23,14 +23,14 @@ def _has_mermaid_blocks(source_dir: Path) -> bool:
     return False
 
 
-def build(output_dir: Path, mermaid_mode: str = "browser"):
+def build(output_dir: Path, mermaid_mode: str):
     """在 output_dir 中运行 Sphinx 构建 singlehtml。
 
     Args:
         output_dir: 包含 source/ 目录的 Sphinx 项目根目录
-        mermaid_mode: "browser" 或 "png"
+        mermaid_mode: "browser" 或 "png"（auto 已在 CLI 层解析完毕）
     """
-    # png 模式：探测 mmdc
+    # png 模式：验证 mmdc 可用（若不存在则在开始构建前直接报错）
     if mermaid_mode == "png":
         source_dir = output_dir / "source"
         if _has_mermaid_blocks(source_dir) and not shutil.which("mmdc"):

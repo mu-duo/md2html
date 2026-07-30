@@ -17,6 +17,7 @@ dependencies = [
 
 [project.scripts]
 md2html = "md2html.cli:main"
+m2h = "md2html.cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/md2html"]

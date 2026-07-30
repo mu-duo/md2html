@@ -231,7 +231,13 @@ def _generate_conf_py(
     language: str = "zh_CN",
     mermaid_mode: str = "browser",
 ):
-    """生成 conf.py。"""
+    """生成 conf.py。
+
+    根据 mermaid_mode 生成不同配置：
+    - browser: 浏览器端渲染模式，内联 mermaid.js
+    - png: mmdc 构建期预渲染为 PNG 图片
+    （auto 模式由 CLI 层预先解析为 browser 或 png）
+    """
     if mermaid_mode == "png":
         # 解析 mmdc 完整路径，确保 Windows 下 Popen 可找到 .cmd 文件
         mmdc_path = shutil.which("mmdc")
@@ -246,12 +252,13 @@ def _generate_conf_py(
 
 project = {project!r}
 author = {author!r}
-extensions = ["myst_parser", "sphinxcontrib.mermaid"]
+extensions = ["myst_parser", "sphinxcontrib.mermaid", "sphinx.ext.mathjax"]
 root_doc = {root_doc!r}
 language = {language!r}
-html_theme = "sphinx_rtd_theme"
+html_theme = "nature"
 myst_heading_anchors = 3
 myst_fence_as_directive = ["mermaid"]
+myst_enable_extensions = ["dollarmath"]
 
 # png 模式：由 sphinxcontrib-mermaid 调用 mmdc 在构建期渲染为 PNG，
 # 产物内嵌图片，无需浏览器端 mermaid.js。
@@ -265,12 +272,13 @@ mermaid_output_format = "png"
 
 project = {project!r}
 author = {author!r}
-extensions = ["myst_parser", "sphinxcontrib.mermaid"]
+extensions = ["myst_parser", "sphinxcontrib.mermaid", "sphinx.ext.mathjax"]
 root_doc = {root_doc!r}
 language = {language!r}
-html_theme = "sphinx_rtd_theme"
+html_theme = "nature"
 myst_heading_anchors = 3
 myst_fence_as_directive = ["mermaid"]
+myst_enable_extensions = ["dollarmath"]
 
 # 使用 sphinxcontrib-mermaid 的 raw 模式（默认），输出 <pre class="mermaid"> 块，
 # 由浏览器端 mermaid.js 渲染。不依赖外部 mmdc 工具。
